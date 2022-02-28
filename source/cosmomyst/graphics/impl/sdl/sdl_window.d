@@ -1,4 +1,4 @@
-module cosmomyst.graphics.implementation.sdl_window;
+module cosmomyst.graphics.impl.sdl.sdl_window;
 
 version (SDL):
 
@@ -116,7 +116,7 @@ public class SDLWindow : Window
             exit(1);
         }
 
-        if (SDL_Init(SDL_INIT_VIDEO) != 0)
+        if (SDL_Init(SDL_INIT_VIDEO) < 0)
         {
             writeln("Failed to initialize SDL. Error: ", SDL_GetError());
             exit(1);
@@ -148,7 +148,7 @@ public class SDLWindow : Window
             exit(1);
         }
 
-        if (IMG_Init(IMG_INIT_PNG) != 0)
+        if (IMG_Init(IMG_INIT_PNG) < 0)
         {
             writeln("Failed to initialize SDL_Image. Error: ", IMG_GetError());
             exit(1);
