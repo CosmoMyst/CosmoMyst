@@ -1,0 +1,16 @@
+.dub
+docs.json
+__dummy.html
+docs/
+/cosmomyst
+cosmomyst.so
+cosmomyst.dylib
+cosmomyst.dll
+cosmomyst.a
+cosmomyst.lib
+cosmomyst-test-*
+*.exe
+*.o
+*.obj
+*.lst
+libcosmomyst.a
