@@ -39,8 +39,11 @@ public abstract class Window
     /// Polls the window events, this makes sure that input, resizing and other events get registered.
     abstract void pollEvents() @nogc nothrow;
 
-    /// Sets the window size.
-    abstract void setSize(uint w, uint h) @nogc nothrow;
+    /// Returns the window size. Only if in windowed mode. Use getFullscreenSize() in fullscren mode.
+    abstract Vec2u getWindowedSize() @nogc nothrow;
+
+    /// Sets the window size. Only if in windowed mode. Use setFullscreenSize() in fullscreen mode.
+    abstract void setWindowedSize(uint w, uint h) @nogc nothrow;
 
     /// Returns the amount of milliseconds passed since the start.
     abstract ulong getElapsedMilliseconds() @nogc nothrow const;
@@ -51,9 +54,6 @@ public abstract class Window
 
     /// Returns the system-specific frequency of the high resolution counter.
     abstract ulong getHighResFrequency() @nogc nothrow const;
-
-    /// Returns the window size.
-    abstract Vec2u getSize() @nogc nothrow;
 
     /// Sets the resizable state of the window. You can't change the resizable state of a fullscreen window.
     abstract void setResizable(bool) @nogc nothrow;

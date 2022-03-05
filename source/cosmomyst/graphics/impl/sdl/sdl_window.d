@@ -167,8 +167,15 @@ public class SDLWindow : Window
             default: break;
         }
     }
+    
+    public override Vec2u getWindowedSize() @nogc nothrow
+    {
+        int w, h;
+        SDL_GetWindowSize(window, &w, &h);
+        return Vec2u(w, h);
+    }
 
-    public override void setSize(uint w, uint h) @nogc nothrow
+    public override void setWindowedSize(uint w, uint h) @nogc nothrow
     {
         SDL_SetWindowSize(window, w, h);
     }
@@ -186,13 +193,6 @@ public class SDLWindow : Window
     public override ulong getHighResFrequency() @nogc nothrow const
     {
         return SDL_GetPerformanceFrequency();
-    }
-    
-    public override Vec2u getSize() @nogc nothrow
-    {
-        int w, h;
-        SDL_GetWindowSize(window, &w, &h);
-        return Vec2u(w, h);
     }
 
     public override void setResizable(bool v) @nogc nothrow
