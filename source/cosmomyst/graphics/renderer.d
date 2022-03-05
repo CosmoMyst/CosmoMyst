@@ -2,6 +2,7 @@ module cosmomyst.graphics.renderer;
 
 import dath;
 import cosmomyst.graphics.color;
+import cosmomyst.graphics.sprite;
 
 /// Base interface for a graphics renderer. Different platforms and rendering implementations should inherit this.
 public interface Renderer
@@ -20,4 +21,7 @@ public interface Renderer
 
     /// Draws a filled rectangle to the screen.
     void drawFillRect(Rectf, Color color) @nogc nothrow;
+
+    /// Draws a sprite by specifying the source and destination rectangles
+    void drawSprite(Sprite, Rectf source, Rectf dest) @nogc nothrow;
 }

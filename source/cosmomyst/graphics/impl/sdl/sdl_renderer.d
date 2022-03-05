@@ -4,10 +4,10 @@ version(SDL):
 
 import bindbc.sdl;
 import dath;
+import cosmomyst.graphics.sprite;
 import cosmomyst.graphics.renderer;
 import cosmomyst.graphics.color;
-import cosmomyst.graphics.impl.sdl.sdl_window;
-import cosmomyst.graphics.impl.sdl.sdl_util;
+import cosmomyst.graphics.impl.sdl;
 
 public class SDLRenderer : Renderer
 {
@@ -65,6 +65,21 @@ public class SDLRenderer : Renderer
         SDL_RenderFillRect(renderer, &sdlRect);
 
         setSDLDrawColor(clearColor);
+    }
+
+    public SDL_Renderer* getInternalRenderer() @nogc nothrow
+    {
+        return renderer;
+    }
+
+    public void drawSprite(Sprite sprite, Rectf source, Rectf dest) @nogc nothrow
+    {
+        SDL_Texture* tex = (cast(SDLSprite) sprite).getInternalTexture();
+
+        SDL_Rect sdlSource = { cast(int) source.x, cast(int) source.y, cast(int) source.w, cast(int) source.h };
+        SDL_Rect sdlDest = { cast(int) dest.x, cast(int) dest.y, cast(int) dest.w, cast(int) dest.h };
+
+        SDL_RenderCopy(renderer, tex, &sdlSource, &sdlDest);
     }
 
     private void setSDLDrawColor(Color c) @nogc nothrow

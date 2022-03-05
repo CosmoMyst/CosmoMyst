@@ -15,6 +15,8 @@ public abstract class Game
     protected Renderer renderer;
     protected Input input;
 
+    protected ContentManager contentManager;
+
     /// Time elapsed since the start;
     protected double elapsedTime = 0f;
 
@@ -23,6 +25,8 @@ public abstract class Game
         window = new SDLWindow(title, width, height);
         renderer = new SDLRenderer(cast(SDLWindow) window);
         input = new SDLInput();
+
+        contentManager = new ContentManager(renderer);
 
         renderer.setClearColor(Colors.white);
     }
