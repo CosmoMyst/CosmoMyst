@@ -24,6 +24,9 @@ public abstract class Window
     /// Is the window open?
     abstract bool isOpen() @nogc nothrow const;
 
+    /// Tells the window it should close, won't be done immediately in most cases.
+    abstract void close() @nogc nothrow;
+
     /// Sets whether the cursor is visible or not.
     abstract void setCursorVisibility(bool) @nogc nothrow const;
 

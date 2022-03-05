@@ -60,6 +60,11 @@ public class SDLWindow : Window
         return open;
     }
 
+    public override void close() @nogc nothrow
+    {
+        open = false;
+    }
+
     public override void setCursorVisibility(bool v) @nogc nothrow const
     {
         SDL_ShowCursor(v);
