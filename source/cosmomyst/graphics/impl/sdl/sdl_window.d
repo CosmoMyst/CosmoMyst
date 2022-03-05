@@ -18,10 +18,10 @@ public class SDLWindow : Window
 
     private bool open;
 
-    private bool mouseFocus;
-    private bool keyboardFocus;
-    private bool minimized;
-    private bool maximized;
+    private bool mouseFocus = false;
+    private bool keyboardFocus = false;
+    private bool minimized = false;
+    private bool maximized = false;
 
     public this(string title, uint width, uint height)
     {
@@ -120,7 +120,7 @@ public class SDLWindow : Window
 
             case SDL_WINDOWEVENT_FOCUS_LOST:
             {
-                keyboardFocus = true;
+                keyboardFocus = false;
                 onKeyboardFocusChange.emit(keyboardFocus);
             } break;
 
@@ -186,22 +186,22 @@ public class SDLWindow : Window
 
     public override bool hasMouseFocus() @nogc nothrow const
     {
-        return hasMouseFocus;
+        return mouseFocus;
     }
     
     public override bool hasKeyboardFocus() @nogc nothrow const
     {
-        return hasKeyboardFocus;
+        return keyboardFocus;
     }
     
     public override bool isMinimized() @nogc nothrow const
     {
-        return isMinimized;
+        return minimized;
     }
     
     public override bool isMaximized() @nogc nothrow const
     {
-        return isMaximized;
+        return maximized;
     }
     
     package SDL_Window* getInternalWindow() @nogc nothrow
