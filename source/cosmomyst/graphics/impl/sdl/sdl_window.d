@@ -266,6 +266,8 @@ public class SDLWindow : Window
         import core.stdc.stdlib : exit;
         import std.stdio : writeln;
 
+        if (isSDLLoaded()) return;
+
         version (Windows) setCustomLoaderSearchPath("redist/win64");
 
         SDLSupport support = loadSDL();
@@ -303,6 +305,8 @@ public class SDLWindow : Window
     {
         import core.stdc.stdlib : exit;
         import std.stdio : writeln;
+
+        if (isSDLImageLoaded()) return;
 
         version (Windows) setCustomLoaderSearchPath("redist/win64");
 
