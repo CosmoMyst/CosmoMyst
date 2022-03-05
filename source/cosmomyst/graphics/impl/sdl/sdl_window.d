@@ -1,6 +1,6 @@
 module cosmomyst.graphics.impl.sdl.sdl_window;
 
-version (SDL):
+version(SDL):
 
 import bindbc.sdl;
 import cosmomyst.graphics.window;
@@ -91,6 +91,11 @@ public class SDLWindow : Window
     public override ulong getHighResFrequency() @nogc nothrow const
     {
         return SDL_GetPerformanceFrequency();
+    }
+
+    package SDL_Window* getInternalWindow() @nogc nothrow
+    {
+        return window;
     }
 
     private void loadSDLInternal()

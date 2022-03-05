@@ -6,6 +6,11 @@
 	"description": "Small 2D game engine written in D.",
 	"license": "MIT",
 	"name": "cosmomyst",
+	"dependencies": {
+		"dath": {
+			"path": "../Dath"
+		}
+	},
 
 	"configurations": [
 		{
