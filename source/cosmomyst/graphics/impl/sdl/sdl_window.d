@@ -17,6 +17,7 @@ public class SDLWindow : Window
     private uint height;
 
     private bool open;
+    private string title;
 
     private bool mouseFocus = false;
     private bool keyboardFocus = false;
@@ -47,6 +48,7 @@ public class SDLWindow : Window
         }
 
         open = true;
+        this.title = title;
     }
 
     public ~this()
@@ -63,6 +65,17 @@ public class SDLWindow : Window
     public override void close() @nogc nothrow
     {
         open = false;
+    }
+
+    public override string getTitle() @nogc nothrow const
+    {
+        return title;
+    }
+
+    public override void setTitle(string t) @nogc nothrow
+    {
+        title = t;
+        SDL_SetWindowTitle(window, t.ptr);
     }
 
     public override void setCursorVisibility(bool v) @nogc nothrow const
