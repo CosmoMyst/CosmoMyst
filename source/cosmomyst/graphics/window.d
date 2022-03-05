@@ -1,5 +1,7 @@
 module cosmomyst.graphics.window;
 
+import dath;
+
 /// Base interface for an operating system window. Different platforms and rendering implementations should inherit this.
 public interface Window
 {
@@ -24,4 +26,13 @@ public interface Window
 
     /// Returns the system-specific frequency of the high resolution counter.
     ulong getHighResFrequency() @nogc nothrow const;
+
+    /// Returns the window size.
+    Vec2u getSize() @nogc nothrow;
+
+    /// Sets the resizable state of the window. You can't change the resizable state of a fullscreen window.
+    void setResizable(bool) @nogc nothrow;
+
+    /// Sets the event to be called when the window gets resized.
+    void setOnResizeEvent(void function(Vec2u size) @nogc nothrow) @nogc nothrow;
 }

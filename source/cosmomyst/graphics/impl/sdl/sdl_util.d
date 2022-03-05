@@ -44,3 +44,11 @@ public SDL_Rect toSDLRect(const Rectf rect) @nogc nothrow
         cast(int) rect.h
     );
 }
+
+/** 
+ * Converts a `bool` to an `SDL_bool`.
+ */
+public SDL_bool toSDLBool(const bool v) @nogc nothrow
+{
+    return v ? SDL_TRUE : SDL_FALSE;
+}
