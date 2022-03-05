@@ -16,7 +16,7 @@
 			"versions": [
 				"SDL_Image",
 				"SDL_TTF",
-				"SDL_205",
+				"SDL_2010",
 				"SDL"
 			]
 		}

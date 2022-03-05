@@ -19,10 +19,13 @@ public class SDLWindow : Window
     private bool open;
     private string title;
 
-    private bool mouseFocus = false;
-    private bool keyboardFocus = false;
-    private bool minimized = false;
-    private bool maximized = false;
+    private bool mouseFocus;
+    private bool keyboardFocus;
+    private bool minimized;
+    private bool maximized;
+    private bool fullscreen;
+
+    private WindowMode mode = WindowMode.windowed;
 
     public this(string title, uint width, uint height)
     {
@@ -216,6 +219,42 @@ public class SDLWindow : Window
     {
         return maximized;
     }
+
+    public override bool setMode(WindowMode mode) @nogc nothrow
+    {
+        int res = 0;
+
+        final switch (mode)
+        {
+            case WindowMode.fullscreen:
+            {
+                res = SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
+            } break;
+
+            case WindowMode.fullscreenBorderless:
+            {
+                res = SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+            } break;
+
+            case WindowMode.windowed:
+            {
+                res = SDL_SetWindowFullscreen(window, 0);
+            } break;
+        }
+
+        if (res == 0)
+        {
+            this.mode = mode;
+            return true;
+        }
+
+        return false;
+    }
+
+    public override WindowMode getMode() @nogc nothrow const
+    {
+        return mode;
+    }
     
     package SDL_Window* getInternalWindow() @nogc nothrow
     {
@@ -242,6 +281,12 @@ public class SDLWindow : Window
                 writeln("Wrong version of SDL.");
             }
 
+            exit(1);
+        }
+
+        if (loadedSDLVersion() < SDLSupport.sdl2010)
+        {
+            writeln("Wrong version of SDL");
             exit(1);
         }
 

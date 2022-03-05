@@ -69,4 +69,17 @@ public abstract class Window
 
     /// Is the window maximized?
     abstract bool isMaximized() @nogc nothrow const;
+
+    /// Set the window mode. Returns true on success.
+    abstract bool setMode(WindowMode) @nogc nothrow;
+
+    /// Get the window mode.
+    abstract WindowMode getMode() @nogc nothrow const;
+}
+
+public enum WindowMode
+{
+    fullscreen,
+    fullscreenBorderless,
+    windowed
 }
