@@ -4,6 +4,7 @@ version(SDL):
 
 import bindbc.sdl;
 import dath;
+import cosmomyst.events;
 import cosmomyst.graphics.window;
 import cosmomyst.graphics.impl.sdl.sdl_util;
 
@@ -17,7 +18,10 @@ public class SDLWindow : Window
 
     private bool open;
 
-    private void function(Vec2u size) @nogc nothrow onResizeEvent;
+    private bool mouseFocus;
+    private bool keyboardFocus;
+    private bool minimized;
+    private bool maximized;
 
     public this(string title, uint width, uint height)
     {
@@ -88,10 +92,55 @@ public class SDLWindow : Window
         {
             case SDL_WINDOWEVENT_SIZE_CHANGED:
             {
-                if (onResizeEvent !is null)
-                {
-                    onResizeEvent(Vec2u(event.window.data1, event.window.data2));
-                }
+                onResize.emit(Vec2u(event.window.data1, event.window.data2));
+            } break;
+
+            case SDL_WINDOWEVENT_ENTER:
+            {
+                mouseFocus = true;
+                onMouseFocusChange.emit(mouseFocus);
+            } break;
+
+            case SDL_WINDOWEVENT_LEAVE:
+            {
+                mouseFocus = false;
+                onMouseFocusChange.emit(mouseFocus);
+            } break;
+
+            case SDL_WINDOWEVENT_FOCUS_GAINED:
+            {
+                keyboardFocus = true;
+                onKeyboardFocusChange.emit(keyboardFocus);
+            } break;
+
+            case SDL_WINDOWEVENT_FOCUS_LOST:
+            {
+                keyboardFocus = true;
+                onKeyboardFocusChange.emit(keyboardFocus);
+            } break;
+
+            case SDL_WINDOWEVENT_MINIMIZED:
+            {
+                minimized = true;
+                maximized = false;
+                onMinimizedChange.emit(minimized);
+                onMaximizedChange.emit(maximized);
+            } break;
+
+            case SDL_WINDOWEVENT_MAXIMIZED:
+            {
+                minimized = false;
+                maximized = true;
+                onMinimizedChange.emit(minimized);
+                onMaximizedChange.emit(maximized);
+            } break;
+
+            case SDL_WINDOWEVENT_RESTORED:
+            {
+                minimized = false;
+                maximized = false;
+                onMinimizedChange.emit(minimized);
+                onMaximizedChange.emit(maximized);
             } break;
 
             default: break;
@@ -118,23 +167,38 @@ public class SDLWindow : Window
         return SDL_GetPerformanceFrequency();
     }
     
-    public Vec2u getSize() @nogc nothrow
+    public override Vec2u getSize() @nogc nothrow
     {
         int w, h;
         SDL_GetWindowSize(window, &w, &h);
         return Vec2u(w, h);
     }
 
-    public void setResizable(bool v) @nogc nothrow
+    public override void setResizable(bool v) @nogc nothrow
     {
         SDL_SetWindowResizable(window, toSDLBool(v));
     }
 
-    public void setOnResizeEvent(void function(Vec2u size) @nogc nothrow event) @nogc nothrow
+    public override bool hasMouseFocus() @nogc nothrow const
     {
-        onResizeEvent = event;
+        return hasMouseFocus;
     }
-
+    
+    public override bool hasKeyboardFocus() @nogc nothrow const
+    {
+        return hasKeyboardFocus;
+    }
+    
+    public override bool isMinimized() @nogc nothrow const
+    {
+        return isMinimized;
+    }
+    
+    public override bool isMaximized() @nogc nothrow const
+    {
+        return isMaximized;
+    }
+    
     package SDL_Window* getInternalWindow() @nogc nothrow
     {
         return window;

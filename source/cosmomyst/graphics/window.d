@@ -1,38 +1,63 @@
 module cosmomyst.graphics.window;
 
 import dath;
+import cosmomyst.events;
 
 /// Base interface for an operating system window. Different platforms and rendering implementations should inherit this.
-public interface Window
+public abstract class Window
 {
+    /// Event that's fired when the window is resized
+    public GameLoopEvent!Vec2u onResize;
+
+    /// Event that's fired when the mouse focus on the window changes
+    public GameLoopEvent!bool onMouseFocusChange;
+
+    /// Event that's fired when the keyboard focus on the window changes
+    public GameLoopEvent!bool onKeyboardFocusChange;
+
+    /// Event that's fired when the minimized state of the window changes
+    public GameLoopEvent!bool onMinimizedChange;
+
+    /// Event that's fired when the maximized state of the window changes
+    public GameLoopEvent!bool onMaximizedChange;
+
     /// Is the window open?
-    bool isOpen() @nogc nothrow const;
+    abstract bool isOpen() @nogc nothrow const;
 
     /// Sets whether the cursor is visible or not.
-    void setCursorVisibility(bool) @nogc nothrow const;
+    abstract void setCursorVisibility(bool) @nogc nothrow const;
 
     /// Polls the window events, this makes sure that input, resizing and other events get registered.
-    void pollEvents() @nogc nothrow;
+    abstract void pollEvents() @nogc nothrow;
 
     /// Sets the window size.
-    void setSize(uint w, uint h) @nogc nothrow;
+    abstract void setSize(uint w, uint h) @nogc nothrow;
 
     /// Returns the amount of milliseconds passed since the start.
-    ulong getElapsedMilliseconds() @nogc nothrow const;
+    abstract ulong getElapsedMilliseconds() @nogc nothrow const;
 
     /// Returns the high resolution counter, usually in micro or nano seconds, depends on the system.
     /// This information is only useful with `getHighResFrequency`.
-    ulong getHighResCounter() @nogc nothrow const;
+    abstract ulong getHighResCounter() @nogc nothrow const;
 
     /// Returns the system-specific frequency of the high resolution counter.
-    ulong getHighResFrequency() @nogc nothrow const;
+    abstract ulong getHighResFrequency() @nogc nothrow const;
 
     /// Returns the window size.
-    Vec2u getSize() @nogc nothrow;
+    abstract Vec2u getSize() @nogc nothrow;
 
     /// Sets the resizable state of the window. You can't change the resizable state of a fullscreen window.
-    void setResizable(bool) @nogc nothrow;
+    abstract void setResizable(bool) @nogc nothrow;
 
-    /// Sets the event to be called when the window gets resized.
-    void setOnResizeEvent(void function(Vec2u size) @nogc nothrow) @nogc nothrow;
+    /// Does the window have mouse focus?
+    abstract bool hasMouseFocus() @nogc nothrow const;
+
+    /// Does the window have keyboard focus?
+    abstract bool hasKeyboardFocus() @nogc nothrow const;
+
+    /// Is the window minimized?
+    abstract bool isMinimized() @nogc nothrow const;
+
+    /// Is the window maximized?
+    abstract bool isMaximized() @nogc nothrow const;
 }

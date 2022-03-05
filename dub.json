@@ -2,24 +2,17 @@
 	"authors": [
 		"CodeMyst"
 	],
-	"copyright": "Copyright © 2022, CodeMyst",
-	"description": "Small 2D game engine written in D.",
-	"license": "MIT",
-	"name": "cosmomyst",
-	"dependencies": {
-		"dath": {
-			"path": "../Dath"
-		}
-	},
-
 	"configurations": [
 		{
-			"name": "sdl",
-			"targetType": "library",
-			"platforms": ["windows", "linux"],
 			"dependencies": {
 				"bindbc-sdl": "~>1.0.1"
 			},
+			"name": "sdl",
+			"platforms": [
+				"windows",
+				"linux"
+			],
+			"targetType": "library",
 			"versions": [
 				"SDL_Image",
 				"SDL_TTF",
@@ -27,5 +20,15 @@
 				"SDL"
 			]
 		}
-	]
+	],
+	"copyright": "Copyright © 2022, CodeMyst",
+	"dependencies": {
+		"dath": {
+			"path": "../Dath",
+			"version": ">=0.0.0"
+		}
+	},
+	"description": "Small 2D game engine written in D.",
+	"license": "MIT",
+	"name": "cosmomyst"
 }
