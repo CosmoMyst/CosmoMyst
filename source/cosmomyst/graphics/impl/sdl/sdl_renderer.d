@@ -3,9 +3,11 @@ module cosmomyst.graphics.impl.sdl.sdl_renderer;
 version(SDL):
 
 import bindbc.sdl;
+import dath;
 import cosmomyst.graphics.renderer;
 import cosmomyst.graphics.color;
 import cosmomyst.graphics.impl.sdl.sdl_window;
+import cosmomyst.graphics.impl.sdl.sdl_util;
 
 public class SDLRenderer : Renderer
 {
@@ -37,7 +39,7 @@ public class SDLRenderer : Renderer
     {
         SDL_RenderClear(renderer);
 
-        SDL_SetRenderDrawColor(renderer, clearColor.r, clearColor.g, clearColor.b, clearColor.a);
+        setSDLDrawColor(clearColor);
     }
 
     public void end() @nogc nothrow
@@ -53,5 +55,20 @@ public class SDLRenderer : Renderer
     public void setClearColor(Color c) @nogc nothrow
     {
         clearColor = c;
+    }
+    
+    public void drawFillRect(Rectf rect, Color color) @nogc nothrow
+    {
+        setSDLDrawColor(color);       
+
+        const sdlRect = toSDLRect(rect);
+        SDL_RenderFillRect(renderer, &sdlRect);
+
+        setSDLDrawColor(clearColor);
+    }
+
+    private void setSDLDrawColor(Color c) @nogc nothrow
+    {
+        SDL_SetRenderDrawColor(renderer, c.r, c.g, c.b, c.a);
     }
 }
