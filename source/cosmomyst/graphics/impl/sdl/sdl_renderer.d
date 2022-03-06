@@ -56,6 +56,14 @@ public class SDLRenderer : Renderer
     {
         clearColor = c;
     }
+
+    public Rectf getViewport() @nogc nothrow
+    {
+        SDL_Rect rect;
+        SDL_RenderGetViewport(renderer, &rect);
+
+        return Rectf(rect.x, rect.y, rect.w, rect.h);
+    }
     
     public void drawFillRect(Rectf rect, Color color) @nogc nothrow
     {

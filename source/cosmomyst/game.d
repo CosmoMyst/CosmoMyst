@@ -20,11 +20,15 @@ public abstract class Game
     /// Time elapsed since the start;
     protected double elapsedTime = 0f;
 
+    protected UIHost uiHost;
+
     public this(string title, uint width, uint height)
     {
         window = new SDLWindow(title, width, height);
         renderer = new SDLRenderer(cast(SDLWindow) window);
         input = new SDLInput();
+
+        uiHost = new UIHost();
 
         contentManager = new ContentManager(renderer);
 
@@ -73,6 +77,14 @@ public abstract class Game
     }
 
     protected void fixedUpdate(double) @nogc nothrow { }
-    protected void update(double) @nogc nothrow { }
-    protected void draw() @nogc nothrow { }
+
+    protected void update(double dt) @nogc nothrow
+    {
+        uiHost.update(dt);
+    }
+
+    protected void draw() @nogc nothrow
+    {
+        uiHost.draw(renderer);
+    }
 }

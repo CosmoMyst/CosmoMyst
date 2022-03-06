@@ -19,6 +19,9 @@ public interface Renderer
     /// Set the clear color. Color with which the screen is cleared every frame.
     void setClearColor(Color) @nogc nothrow;
 
+    /// Returns the drawing area for the current target.
+    Rectf getViewport() @nogc nothrow;
+
     /// Draws a filled rectangle to the screen.
     void drawFillRect(Rectf, Color color) @nogc nothrow;
 
