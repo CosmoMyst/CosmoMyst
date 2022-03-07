@@ -23,8 +23,8 @@ public interface Renderer
     Rectf getViewport() @nogc nothrow;
 
     /// Draws a filled rectangle to the screen.
-    void drawFillRect(Rectf, Color color) @nogc nothrow;
+    void drawFillRect(Rectf, Color color, uint sortingOrder = 0) @nogc nothrow;
 
     /// Draws a sprite by specifying the source and destination rectangles
-    void drawSprite(Sprite, Rectf source, Rectf dest) @nogc nothrow;
+    void drawSprite(Sprite, Rectf source, Rectf dest, Color color = Colors.white, uint sortingOrder = 0) @nogc nothrow;
 }

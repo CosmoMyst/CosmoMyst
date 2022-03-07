@@ -19,6 +19,8 @@ public class SDLSprite : Sprite
         int w, h;
         SDL_QueryTexture(texture, null, null, &w, &h);
         size = Vec2(w, h);
+
+        SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
     }
 
     public ~this()

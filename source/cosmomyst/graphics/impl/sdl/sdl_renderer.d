@@ -12,6 +12,14 @@ import cosmomyst.graphics.impl.sdl;
 private struct DrawCall
 {
     public uint sortOrder;
+
+    public Sprite sprite;
+
+    public Rectf source;
+
+    public Rectf dest;
+
+    public Color color;
 }
 
 public class SDLRenderer : Renderer
@@ -20,8 +28,9 @@ public class SDLRenderer : Renderer
     private Color clearColor = Colors.black;
 
     private DrawCall[] drawCalls;
+    private uint numDrawCalls = 0;
 
-    private SDL_Texture* rectTex;
+    private Sprite rectSprite;
 
     /++
      + Params:
@@ -45,7 +54,7 @@ public class SDLRenderer : Renderer
         drawCalls.length = maxDrawCalls;
 
         // create a texture used for drawing rectangles
-        rectTex = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, 1, 1);
+        SDL_Texture* rectTex = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, 1, 1);
 
         SDL_SetRenderTarget(renderer, rectTex);
         setSDLDrawColor(Colors.white);
@@ -53,17 +62,18 @@ public class SDLRenderer : Renderer
         SDL_SetRenderTarget(renderer, null);
         setSDLDrawColor(clearColor);
 
-        SDL_SetTextureBlendMode(rectTex, SDL_BLENDMODE_BLEND);
+        rectSprite = new SDLSprite(rectTex);
     }
 
     public ~this()
     {
-        SDL_DestroyTexture(rectTex);
         SDL_DestroyRenderer(renderer);
     }
 
     public void begin() @nogc nothrow
     {
+        numDrawCalls = 0;
+
         SDL_RenderClear(renderer);
 
         setSDLDrawColor(clearColor);
@@ -71,6 +81,15 @@ public class SDLRenderer : Renderer
 
     public void end() @nogc nothrow
     {
+        import std.algorithm : sort;
+
+        drawCalls[0..numDrawCalls].sort!((a, b) => a.sortOrder < b.sortOrder);
+
+        for (int i = 0; i < numDrawCalls; i++)
+        {
+            executeDrawCall(drawCalls[i]);
+        }
+
         SDL_RenderPresent(renderer);
     }
 
@@ -97,28 +116,45 @@ public class SDLRenderer : Renderer
         return renderer;
     }
 
-    public void drawFillRect(Rectf rect, Color color) @nogc nothrow
+    public void drawFillRect(Rectf rect, Color color, uint sortingOrder = 0) @nogc nothrow
     {
-        SDL_Rect source = { 0, 0, 1, 1 };
-        SDL_Rect dest = { cast(int) rect.x, cast(int) rect.y, cast(int) rect.w, cast(int) rect.h };
-
-        SDL_SetTextureColorMod(rectTex, color.r, color.g, color.b);
-        SDL_SetTextureAlphaMod(rectTex, color.a);
-
-        SDL_RenderCopy(renderer, rectTex, &source, &dest);
-
-        SDL_SetTextureColorMod(rectTex, Colors.white.r, Colors.white.g, Colors.white.b);
-        SDL_SetTextureAlphaMod(rectTex, 255);
+        DrawCall call = DrawCall(sortingOrder, rectSprite, Rectf(0, 0, 1, 1), rect, color);
+        addDrawCall(call);
     }
 
-    public void drawSprite(Sprite sprite, Rectf source, Rectf dest) @nogc nothrow
+    public void drawSprite(Sprite sprite, Rectf source, Rectf dest,
+        Color color = Colors.white, uint sortingOrder = 0) @nogc nothrow
     {
-        SDL_Texture* tex = (cast(SDLSprite) sprite).getInternalTexture();
+        DrawCall call = DrawCall(sortingOrder, sprite, source, dest, color);
+        addDrawCall(call);
+    }
 
-        SDL_Rect sdlSource = { cast(int) source.x, cast(int) source.y, cast(int) source.w, cast(int) source.h };
-        SDL_Rect sdlDest = { cast(int) dest.x, cast(int) dest.y, cast(int) dest.w, cast(int) dest.h };
+    /// Adds the draw call to the list of calls for this frame
+    private void addDrawCall(DrawCall call) @nogc nothrow
+    {
+        drawCalls[numDrawCalls++] = call;
+    }
 
-        SDL_RenderCopy(renderer, tex, &sdlSource, &sdlDest);
+    /// Executes a draw call, actually draws to the screen
+    private void executeDrawCall(DrawCall call) @nogc nothrow
+    {
+        SDL_Texture* tex = (cast(SDLSprite) call.sprite).getInternalTexture();
+
+        SDL_Rect source = { cast(int) call.source.x, cast(int) call.source.y,
+                            cast(int) call.source.w, cast(int) call.source.h };
+
+        SDL_Rect dest = { cast(int) call.dest.x, cast(int) call.dest.y,
+                          cast(int) call.dest.w, cast(int) call.dest.h };
+
+        // set color and alpha
+        SDL_SetTextureColorMod(tex, call.color.r, call.color.g, call.color.b);
+        SDL_SetTextureAlphaMod(tex, call.color.a);
+
+        SDL_RenderCopy(renderer, tex, &source, &dest);
+
+        // reset color and alpha
+        SDL_SetTextureColorMod(tex, Colors.white.r, Colors.white.g, Colors.white.b);
+        SDL_SetTextureAlphaMod(tex, 255);
     }
 
     private void setSDLDrawColor(Color c) @nogc nothrow
