@@ -14,6 +14,8 @@ public class Canvas : Widget
         horizontalAlignment = HorizontalAlignment.stretch;
         verticalAlignment = VerticalAlignment.stretch;
         color = Colors.transparent;
+
+        sortOrder = 1000;
     }
 
     public override void draw(Renderer renderer) @nogc nothrow

@@ -32,6 +32,9 @@ public abstract class Widget
     package Widget parent;
     package Widget[] children;
 
+    /// Sorting order in which elements are drawn. This is usually set internally.
+    public uint sortOrder = 0;
+
     public const(Widget) getParent() @nogc nothrow const
     {
         return parent;
@@ -54,6 +57,7 @@ public abstract class Widget
         children ~= child;
         child.setParent(this);
         child.initialize();
+        child.sortOrder = sortOrder + 1;
     }
 
     public void initialize() { }

@@ -10,6 +10,6 @@ public class Panel : Widget
     {
         super.draw(renderer);
 
-        renderer.drawFillRect(Rectf(position, actualSize), color);
+        renderer.drawFillRect(Rectf(position, actualSize), color, sortOrder);
     }
 }
