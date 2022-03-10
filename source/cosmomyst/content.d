@@ -2,6 +2,7 @@ module cosmomyst.content;
 
 import std.path;
 import std.array;
+import dath;
 import cosmomyst.graphics;
 
 /// Content manager for loading sprites, audio, etc.
@@ -30,8 +31,24 @@ public class ContentManager
             import bindbc.sdl;
             import cosmomyst.graphics.impl.sdl;
 
+            // TODO: error checking
             return new SDLSprite(IMG_LoadTexture((cast(SDLRenderer) renderer).getInternalRenderer(),
                 chainPath(basePath, path).array().ptr));
+        }
+    }
+
+    /// Loads a font form disk. Doesn't cache.
+    public Font loadFont(string path, uint psize)
+    {
+        version(SDL)
+        {
+            import bindbc.sdl;
+            import cosmomyst.graphics.impl.sdl;
+
+            // TODO: error checking
+            TTF_Font* font = TTF_OpenFont(chainPath(basePath, path).array().ptr, psize);
+
+            return new SDLFont(font);
         }
     }
 }

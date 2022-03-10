@@ -4,9 +4,7 @@ version(SDL):
 
 import bindbc.sdl;
 import dath;
-import cosmomyst.graphics.sprite;
-import cosmomyst.graphics.renderer;
-import cosmomyst.graphics.color;
+import cosmomyst.graphics;
 import cosmomyst.graphics.impl.sdl;
 
 private struct DrawCall
@@ -20,6 +18,10 @@ private struct DrawCall
     public Rectf dest;
 
     public Color color;
+
+    public Font font;
+
+    public string text;
 }
 
 public class SDLRenderer : Renderer
@@ -70,7 +72,7 @@ public class SDLRenderer : Renderer
         SDL_DestroyRenderer(renderer);
     }
 
-    public void begin() @nogc nothrow
+    public override void begin() @nogc nothrow
     {
         numDrawCalls = 0;
 
@@ -79,7 +81,7 @@ public class SDLRenderer : Renderer
         setSDLDrawColor(clearColor);
     }
 
-    public void end() @nogc nothrow
+    public override void end() @nogc nothrow
     {
         import std.algorithm : sort;
 
@@ -93,17 +95,17 @@ public class SDLRenderer : Renderer
         SDL_RenderPresent(renderer);
     }
 
-    public Color getClearColor() @nogc nothrow const
+    public override Color getClearColor() @nogc nothrow const
     {
         return clearColor;
     }
 
-    public void setClearColor(Color c) @nogc nothrow
+    public override void setClearColor(Color c) @nogc nothrow
     {
         clearColor = c;
     }
 
-    public Rectf getViewport() @nogc nothrow
+    public override Rectf getViewport() @nogc nothrow
     {
         SDL_Rect rect;
         SDL_RenderGetViewport(renderer, &rect);
@@ -116,16 +118,47 @@ public class SDLRenderer : Renderer
         return renderer;
     }
 
-    public void drawFillRect(Rectf rect, Color color, uint sortingOrder = 0) @nogc nothrow
+    public override void drawFillRect(Rectf rect, Color color, uint sortingOrder = 0) @nogc nothrow
     {
-        DrawCall call = DrawCall(sortingOrder, rectSprite, Rectf(0, 0, 1, 1), rect, color);
+        DrawCall call = DrawCall(sortingOrder, rectSprite, Rectf(0, 0, 1, 1), rect, color, null, null);
         addDrawCall(call);
     }
 
-    public void drawSprite(Sprite sprite, Rectf source, Rectf dest,
+    public override void drawStrokeRect(Rectf rect, uint lineWidth, Color color, uint sortingOrder = 0) @nogc nothrow
+    {
+        auto src = Rectf(0, 0, 1, 1);
+        auto rectLeft = Rectf(rect.x, rect.y, lineWidth, rect.h);
+        auto rectTop = Rectf(rect.x, rect.y, rect.w, lineWidth);
+        auto rectRight = Rectf(rect.x + rect.w - lineWidth, rect.y, lineWidth, rect.h);
+        auto rectBottom = Rectf(rect.x, rect.y + rect.h - lineWidth, rect.w, lineWidth);
+
+        auto left = DrawCall(sortingOrder, rectSprite, src, rectLeft, color, null, null);
+        auto top = DrawCall(sortingOrder, rectSprite, src, rectTop, color, null, null);
+        auto right = DrawCall(sortingOrder, rectSprite, src, rectRight, color, null, null);
+        auto bottom = DrawCall(sortingOrder, rectSprite, src, rectBottom, color, null, null);
+
+        addDrawCall(left);
+        addDrawCall(right);
+        addDrawCall(top);
+        addDrawCall(bottom);
+    }
+
+    public override void drawSprite(Sprite sprite, Rectf source, Rectf dest,
         Color color = Colors.white, uint sortingOrder = 0) @nogc nothrow
     {
-        DrawCall call = DrawCall(sortingOrder, sprite, source, dest, color);
+        DrawCall call = DrawCall(sortingOrder, sprite, source, dest, color, null, null);
+        addDrawCall(call);
+    }
+
+    public override void drawText(Font font, const(string) text, Rectf dest,
+        Color color = Colors.white, uint sortingOrder = 0, bool outline = false) @nogc nothrow
+    {
+        if (outline)
+        {
+            drawStrokeRect(dest, 2, Colors.red, sortingOrder - 1);
+        }
+
+        DrawCall call = DrawCall(sortingOrder, null, Rectf(0), dest, color, font, text);
         addDrawCall(call);
     }
 
@@ -138,23 +171,46 @@ public class SDLRenderer : Renderer
     /// Executes a draw call, actually draws to the screen
     private void executeDrawCall(DrawCall call) @nogc nothrow
     {
-        SDL_Texture* tex = (cast(SDLSprite) call.sprite).getInternalTexture();
-
         SDL_Rect source = { cast(int) call.source.x, cast(int) call.source.y,
                             cast(int) call.source.w, cast(int) call.source.h };
 
         SDL_Rect dest = { cast(int) call.dest.x, cast(int) call.dest.y,
                           cast(int) call.dest.w, cast(int) call.dest.h };
 
-        // set color and alpha
-        SDL_SetTextureColorMod(tex, call.color.r, call.color.g, call.color.b);
-        SDL_SetTextureAlphaMod(tex, call.color.a);
+        // draw text
+        if (call.font !is null)
+        {
+            SDLFont sfont = cast(SDLFont) call.font;
 
-        SDL_RenderCopy(renderer, tex, &source, &dest);
+            SDL_Surface* surf = TTF_RenderText_Blended_Wrapped(sfont.getInternalFont(), call.text.ptr,
+                call.color.toSDLColor(), cast(uint) call.dest.w);
 
-        // reset color and alpha
-        SDL_SetTextureColorMod(tex, Colors.white.r, Colors.white.g, Colors.white.b);
-        SDL_SetTextureAlphaMod(tex, 255);
+            SDL_Texture* tex = SDL_CreateTextureFromSurface(renderer, surf);
+
+            dest.w = surf.w;
+            dest.h = surf.h;
+
+            SDL_RenderCopy(renderer, tex, null, &dest);
+
+            // caching maybe?
+            SDL_DestroyTexture(tex);
+            SDL_FreeSurface(surf);
+        }
+        // draw sprite
+        else
+        {
+            SDL_Texture* tex = (cast(SDLSprite) call.sprite).getInternalTexture();
+
+            // set color and alpha
+            SDL_SetTextureColorMod(tex, call.color.r, call.color.g, call.color.b);
+            SDL_SetTextureAlphaMod(tex, call.color.a);
+
+            SDL_RenderCopy(renderer, tex, &source, &dest);
+
+            // reset color and alpha
+            SDL_SetTextureColorMod(tex, Colors.white.r, Colors.white.g, Colors.white.b);
+            SDL_SetTextureAlphaMod(tex, 255);
+        }
     }
 
     private void setSDLDrawColor(Color c) @nogc nothrow

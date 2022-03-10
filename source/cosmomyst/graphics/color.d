@@ -8,5 +8,6 @@ public enum Colors : Color
 {
     black = Color(0, 0, 0, 255),
     white = Color(255, 255, 255, 255),
-    transparent = Color(0, 0, 0, 0)
+    transparent = Color(0, 0, 0, 0),
+    red = Color(255, 0, 0, 255)
 }

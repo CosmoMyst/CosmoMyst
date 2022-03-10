@@ -37,6 +37,7 @@ public class SDLWindow : Window
 
         loadSDLInternal();
         loadSDLImageInternal();
+        loadSDLTTFInternal();
 
         window = SDL_CreateWindow(
             title.ptr,
@@ -56,6 +57,8 @@ public class SDLWindow : Window
 
     public ~this()
     {
+        TTF_Quit();
+        IMG_Quit();
         SDL_DestroyWindow(window);
         SDL_Quit();
     }
@@ -167,7 +170,7 @@ public class SDLWindow : Window
             default: break;
         }
     }
-    
+
     public override Vec2u getWindowedSize() @nogc nothrow
     {
         int w, h;
@@ -204,17 +207,17 @@ public class SDLWindow : Window
     {
         return mouseFocus;
     }
-    
+
     public override bool hasKeyboardFocus() @nogc nothrow const
     {
         return keyboardFocus;
     }
-    
+
     public override bool isMinimized() @nogc nothrow const
     {
         return minimized;
     }
-    
+
     public override bool isMaximized() @nogc nothrow const
     {
         return maximized;
@@ -255,7 +258,7 @@ public class SDLWindow : Window
     {
         return mode;
     }
-    
+
     package SDL_Window* getInternalWindow() @nogc nothrow
     {
         return window;
@@ -329,6 +332,40 @@ public class SDLWindow : Window
         if (IMG_Init(IMG_INIT_PNG) < 0)
         {
             writeln("Failed to initialize SDL_Image. Error: ", IMG_GetError());
+            exit(1);
+        }
+
+        version (Windows) setCustomLoaderSearchPath(null);
+    }
+
+    private void loadSDLTTFInternal()
+    {
+        import core.stdc.stdlib : exit;
+        import std.stdio : writeln;
+
+        if (isSDLTTFLoaded()) return;
+
+        version (Windows) setCustomLoaderSearchPath("redist/win64");
+
+        SDLTTFSupport support = loadSDLTTF();
+
+        if (support != bindbc.sdl.sdlTTFSupport)
+        {
+            if (support == SDLTTFSupport.noLibrary)
+            {
+                writeln("Failed to load SDL_ttf.");
+            }
+            else if (support == SDLTTFSupport.badLibrary)
+            {
+                writeln("Wrong version of SDL_ttf.");
+            }
+
+            exit(1);
+        }
+
+        if (TTF_Init() < 0)
+        {
+            writeln("Failed to initialize SDL_ttf. Error: ", TTF_GetError());
             exit(1);
         }
 
