@@ -55,7 +55,7 @@ public class SDLWindow : Window
         this.title = title;
     }
 
-    public ~this()
+    public override void cleanup()
     {
         TTF_Quit();
         IMG_Quit();

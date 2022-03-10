@@ -75,6 +75,9 @@ public abstract class Window
 
     /// Get the window mode.
     abstract WindowMode getMode() @nogc nothrow const;
+
+    /// Cleans up any internal resources. To be called when the game ends.
+    abstract void cleanup();
 }
 
 public enum WindowMode

@@ -67,7 +67,7 @@ public class SDLRenderer : Renderer
         rectSprite = new SDLSprite(rectTex);
     }
 
-    public ~this()
+    public void cleanup()
     {
         SDL_DestroyRenderer(renderer);
     }

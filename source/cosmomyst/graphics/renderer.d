@@ -34,4 +34,7 @@ public interface Renderer
     /// You can set `outline` to true to visualize a rect of the provided destination.
     void drawText(Font, const(string) text, Rectf dest,
         Color color = Colors.white, uint sortingOrder = 0, bool outline = false) @nogc nothrow;
+
+    /// Cleans up any internal resources. To be called when the game ends.
+    void cleanup();
 }

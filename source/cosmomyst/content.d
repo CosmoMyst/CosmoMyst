@@ -12,9 +12,19 @@ public class ContentManager
 
     private string basePath = "";
 
+    private Sprite[] loadedSprites;
+    private Font[] loadedFonts;
+
     public this(Renderer renderer)
     {
         this.renderer = renderer;
+    }
+
+    /// Cleans up any internal asset resources. To be called when the game ends.
+    public void cleanup()
+    {
+        foreach (f; loadedFonts) f.cleanup();
+        foreach (s; loadedSprites) s.cleanup();
     }
 
     /// sets the base content path
@@ -32,8 +42,12 @@ public class ContentManager
             import cosmomyst.graphics.impl.sdl;
 
             // TODO: error checking
-            return new SDLSprite(IMG_LoadTexture((cast(SDLRenderer) renderer).getInternalRenderer(),
+            Sprite res = new SDLSprite(IMG_LoadTexture((cast(SDLRenderer) renderer).getInternalRenderer(),
                 chainPath(basePath, path).array().ptr));
+
+            loadedSprites ~= res;
+
+            return res;
         }
     }
 
@@ -47,8 +61,11 @@ public class ContentManager
 
             // TODO: error checking
             TTF_Font* font = TTF_OpenFont(chainPath(basePath, path).array().ptr, psize);
+            Font res = new SDLFont(font);
 
-            return new SDLFont(font);
+            loadedFonts ~= res;
+
+            return res;
         }
     }
 }

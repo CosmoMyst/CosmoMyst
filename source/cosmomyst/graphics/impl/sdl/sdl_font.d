@@ -15,10 +15,9 @@ public class SDLFont : Font
         this.font = font;
     }
 
-    public ~this()
+    public override void cleanup()
     {
-        // todo: this should be closed before ttf quits...
-        // TTF_CloseFont(font);
+        TTF_CloseFont(font);
     }
 
     public TTF_Font* getInternalFont() @nogc nothrow

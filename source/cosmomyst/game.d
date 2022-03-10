@@ -24,15 +24,25 @@ public abstract class Game
 
     public this(string title, uint width, uint height)
     {
-        window = new SDLWindow(title, width, height);
-        renderer = new SDLRenderer(cast(SDLWindow) window);
-        input = new SDLInput();
+        version(SDL)
+        {
+            window = new SDLWindow(title, width, height);
+            renderer = new SDLRenderer(cast(SDLWindow) window);
+            input = new SDLInput();
+        }
 
         uiHost = new UIHost();
 
         contentManager = new ContentManager(renderer);
 
         renderer.setClearColor(Colors.white);
+    }
+
+    public ~this()
+    {
+        contentManager.cleanup();
+        renderer.cleanup();
+        window.cleanup();
     }
 
     public void run() nothrow

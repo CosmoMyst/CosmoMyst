@@ -23,7 +23,7 @@ public class SDLSprite : Sprite
         SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
     }
 
-    public ~this()
+    public override void cleanup()
     {
         SDL_DestroyTexture(texture);
     }
