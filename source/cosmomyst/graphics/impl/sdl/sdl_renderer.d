@@ -150,12 +150,33 @@ public class SDLRenderer : Renderer
         addDrawCall(call);
     }
 
+    public override Vec2 measureText(Font font, const(string) text, Vec2 bounds) @nogc nothrow
+    {
+        // rendering text fails if destination size is negative
+        if (bounds.x <= 0 || bounds.y <= 0) return Vec2(0);
+
+        SDL_Rect dest = { 0, 0,
+                          cast(int) bounds.x, cast(int) bounds.y };
+
+        SDLFont sfont = cast(SDLFont) font;
+
+        SDL_Surface* surf = TTF_RenderText_Blended_Wrapped(sfont.getInternalFont(), text.ptr,
+            Colors.white.toSDLColor(), cast(uint) bounds.x);
+
+        Vec2 res = Vec2(surf.w, surf.h);
+
+        // todo: caching maybe?
+        SDL_FreeSurface(surf);
+
+        return res;
+    }
+
     public override void drawText(Font font, const(string) text, Rectf dest,
         Color color = Colors.white, uint sortingOrder = 0, bool outline = false) @nogc nothrow
     {
         if (outline)
         {
-            drawStrokeRect(dest, 2, Colors.red, sortingOrder - 1);
+            drawStrokeRect(dest, 2, Colors.red, sortingOrder);
         }
 
         DrawCall call = DrawCall(sortingOrder, null, Rectf(0), dest, color, font, text);
@@ -180,6 +201,9 @@ public class SDLRenderer : Renderer
         // draw text
         if (call.font !is null)
         {
+            // rendering text fails if destination size is negative
+            if (call.dest.w <= 0 || call.dest.h <= 0) return;
+
             SDLFont sfont = cast(SDLFont) call.font;
 
             SDL_Surface* surf = TTF_RenderText_Blended_Wrapped(sfont.getInternalFont(), call.text.ptr,
@@ -192,7 +216,7 @@ public class SDLRenderer : Renderer
 
             SDL_RenderCopy(renderer, tex, null, &dest);
 
-            // caching maybe?
+            // todo: caching maybe?
             SDL_DestroyTexture(tex);
             SDL_FreeSurface(surf);
         }

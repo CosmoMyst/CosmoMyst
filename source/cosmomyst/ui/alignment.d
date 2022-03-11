@@ -17,3 +17,17 @@ public enum VerticalAlignment
     bottom,
     stretch
 }
+
+public enum TextHorizontalAlignment
+{
+    left,
+    center,
+    right
+}
+
+public enum TextVerticalAlignment
+{
+    top,
+    center,
+    bottom
+}

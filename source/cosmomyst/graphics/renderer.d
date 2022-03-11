@@ -30,6 +30,9 @@ public interface Renderer
     /// Draws a sprite by specifying the source and destination rectangles
     void drawSprite(Sprite, Rectf source, Rectf dest, Color color = Colors.white, uint sortingOrder = 0) @nogc nothrow;
 
+    /// Measures the size the rendered text would take up in regards to boundaries (so wrapping is respected).
+    Vec2 measureText(Font, const(string) text, Vec2 bounds) @nogc nothrow;
+
     /// Draws text to the screen. Specifying the desctination rectangle (text will wrap).
     /// You can set `outline` to true to visualize a rect of the provided destination.
     void drawText(Font, const(string) text, Rectf dest,
