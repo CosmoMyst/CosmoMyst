@@ -29,11 +29,20 @@ public abstract class Widget
     public Thickness margin = Thickness(0);
     public Thickness padding = Thickness(0);
 
+    /// Was the widget hovered by the mouse last time?
+    public bool isHoveredLastFrame = false;
+    /// Is the widget hovered by the mouse this frame?
+    public bool isHovered = false;
+
     package Widget parent;
     package Widget[] children;
 
     /// Sorting order in which elements are drawn. This is usually set internally.
     public uint sortOrder = 0;
+
+    public void delegate() @nogc nothrow onClick;
+    public void delegate() @nogc nothrow onMouseEnter;
+    public void delegate() @nogc nothrow onMouseLeave;
 
     public const(Widget) getParent() @nogc nothrow const
     {
@@ -56,8 +65,8 @@ public abstract class Widget
 
         children ~= child;
         child.setParent(this);
-        child.initialize();
         child.sortOrder = sortOrder + 1;
+        child.initialize();
     }
 
     public void initialize() { }

@@ -16,6 +16,8 @@ public class TextBlock : Widget
     {
         super.draw(renderer);
 
+        if (parent.actualSize.x <= 0 || parent.actualSize.y <= 0) return;
+
         actualSize = renderer.measureText(font, text, actualSize);
         actualSize = actualSize.clamp(Vec2(0), parent.actualSize);
 
@@ -49,6 +51,6 @@ public class TextBlock : Widget
             } break;
         }
 
-        renderer.drawText(font, text, Rectf(position, actualSize), color, sortOrder, false);
+        renderer.drawText(font, text, Rectf(position, actualSize), color, sortOrder);
     }
 }

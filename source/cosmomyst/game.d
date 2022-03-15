@@ -90,7 +90,7 @@ public abstract class Game
 
     protected void update(double dt) @nogc nothrow
     {
-        uiHost.update(dt);
+        uiHost.update(input, dt);
     }
 
     protected void draw() @nogc nothrow
