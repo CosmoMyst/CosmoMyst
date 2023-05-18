@@ -10,7 +10,8 @@
 			"name": "sdl",
 			"platforms": [
 				"windows",
-				"linux"
+				"linux",
+                "darwin"
 			],
 			"targetType": "library",
 			"versions": [
